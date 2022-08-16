@@ -46,13 +46,13 @@ struct ltokens
 ltokens tokenize_expr(const char *expr)
 {
   size_t tokeni = 0;
-  ltokens ltokens;
-  memset(&ltokens, 0, MAX_LTOKENS); 
+  ltokens ltokens = {0};
 
   while (*expr != '\0')
   {
     while(*expr == ' ') expr++;
     if (*expr == '\0') break;
+    assert(tokeni < MAX_LTOKENS);
 
     ltoken token = { .sym = *expr };
 
