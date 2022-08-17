@@ -14,12 +14,7 @@
 
 #define MAX_LTOKENS 1024
 
-typedef enum ltoken_e ltoken_e;
-typedef struct ltoken ltoken;
-typedef struct ltokens ltokens;
-
-enum ltoken_e
-{
+typedef enum {
   op_br_e,
   cl_br_e,
   op_sqbr_e,
@@ -29,56 +24,57 @@ enum ltoken_e
   dot_e,
   dash_e,
   arrow_e
-};
+} ltoken_e;
 
-struct ltoken
-{
+typedef struct {
   ltoken_e type;
   char sym;
-};
+} ltoken;
 
-struct ltokens
-{
+typedef struct {
   ltoken tn[MAX_LTOKENS];
   size_t sz;
-};
+} ltoken_pool;
 
-ltokens tokenize_expr(const char *expr)
+ltoken_pool tokenize_expr(const char *expr)
 {
-  size_t tokeni = 0;
-  ltokens ltokens = {0};
+  size_t lti = 0;
+  ltoken_pool ltp = {0};
 
   while (*expr != '\0')
   {
     while(*expr == ' ') expr++;
     if (*expr == '\0') break;
-    assert(tokeni < MAX_LTOKENS);
+    assert(lti < MAX_LTOKENS);
 
-    ltoken token = { .sym = *expr };
+    ltoken lt = {0};
+    lt.sym = *expr;
 
-    if      (*expr == '(') token.type = op_br_e;
-    else if (*expr == ')') token.type = cl_br_e;
-    else if (*expr == '[') token.type = op_sqbr_e;
-    else if (*expr == ']') token.type = cl_sqbr_e;
-    else if (*expr == '^') token.type = lambda_e;
-    else if (*expr == '.') token.type = dot_e;
-    else if (*expr == '-') token.type = dash_e;
-    else if (*expr == '>') token.type = arrow_e;
-    else if (*expr >= 'a' && *expr <= 'z') token.type = var_e;
+    if      (*expr == '(') lt.type = op_br_e;
+    else if (*expr == ')') lt.type = cl_br_e;
+    else if (*expr == '[') lt.type = op_sqbr_e;
+    else if (*expr == ']') lt.type = cl_sqbr_e;
+    else if (*expr == '^') lt.type = lambda_e;
+    else if (*expr == '.') lt.type = dot_e;
+    else if (*expr == '-') lt.type = dash_e;
+    else if (*expr == '>') lt.type = arrow_e;
+    else if (*expr >= 'a' && *expr <= 'z') lt.type = var_e;
     else assert(false);
 
-    ltokens.tn[tokeni++] = token;
+    ltp.tn[lti++] = lt;
     expr++;
   }
 
-  ltokens.sz = tokeni;
-  return ltokens;
+  ltp.sz = lti;
+  return ltp;
 }
 
-void debug_tokens(ltokens ltokens)
+void debug_tokens(const ltoken_pool *ltp)
 {
-  for (size_t i = 0; i < ltokens.sz; ++i)
-    printf("%d, %c\n", ltokens.tn[i].type, ltokens.tn[i].sym);
+  printf("DEBUG: Tokens\n");
+  for (size_t i = 0; i < ltp->sz; ++i)
+    printf("%d, %c\n", ltp->tn[i].type, ltp->tn[i].sym);
+  printf("\n");
 }
 
 #endif

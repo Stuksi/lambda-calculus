@@ -3,16 +3,18 @@
     TExpr := (BTExpr | NBTExpr), [SubExpr], ATExpr
     BTExpr := (, NBTExpr, )
     NBTExpr := LTExpr | VarTExpr
-    ATExpr := TExpr | ""
+    ATExpr := TExpr | ETExpr
+    ETExpr := ""
     SubExpr := [, Var, -, >, TExpr, ]
     LTExpr := ^, VarTExpr, ., VarTExpr
-    VarTExpr := Var, (VarTExpr | "")
+    VarTExpr := Var, (VarTExpr | ETExpr)
     Var := a | ... | z
 
   TExpr - Term Expression
   BTExpr - Bracket Term Erxpression
   NBTExpr - Non Bracket Term Expression
   ATExpr - Applicated Term Expression
+  ETExpr - Empty Term Expression
   SubExpr - Substitute Expression
   LTExpr - Lambda Term Expression
   VarTExpr - Variable Term Expression
@@ -24,130 +26,154 @@
 
 #include "lambda_tokens.h"
 
-#define MAX_VARTEXPR_VARS 32
-
-typedef struct texpr texpr;
-typedef struct btexpr btexpr;
-typedef struct nbtexpr nbtexpr;
-typedef struct ltexpr ltexpr;
-typedef struct vartexpr vartexpr;
-typedef struct var var;
-
-struct texpr
-{
-  btexpr *btexpr;
-  nbtexpr *nbtexpr;
-  texpr *atexpr;
-};
-
-struct btexpr
-{
-  nbtexpr *nbtexpr;
-};
-
-struct nbtexpr
-{
-  ltexpr *ltexpr;
-  vartexpr *vartexpr;
-};
-
-struct subexpr
-{
-  var *var;
-  texpr *texpr;
-};
-
-struct ltexpr
-{
-  vartexpr *bvartexpr;
-  vartexpr *fvartexpr;
-};
-
-struct vartexpr
-{
-  var *vars[MAX_VARTEXPR_VARS];
-  size_t sz;
-};
-
-struct var
-{
+typedef struct {
   char sym;
-};
+} var;
 
-texpr* parse_texpr(const ltokens*, size_t*);
-btexpr* parse_btexpr(const ltokens*, size_t*);
-nbtexpr* parse_nbtexpr(const ltokens*, size_t*);
-ltexpr* parse_ltexpr(const ltokens*, size_t*);
-vartexpr* parse_vartexpr(const ltokens*, size_t*);
-var* parse_var(const ltokens*, size_t*);
+#define MAX_VARTEXPR_VARS 32
+typedef struct {
+  var vars[MAX_VARTEXPR_VARS];
+  size_t sz;
+} vartexpr;
 
-texpr* parse_expr_from_tokens(const ltokens *ltokens)
+typedef struct {
+  vartexpr bvarte;
+  vartexpr fvarte;
+} ltexpr;
+
+typedef enum {
+  ltexpr_e,
+  vartexpr_e
+} texprte;
+
+typedef struct {
+  bool br;
+  bool sub;
+  texprte type;
+} texprp;
+
+typedef struct {
+  ltexpr lte;
+  vartexpr varte;
+  texprp tep;
+} texpr;
+
+typedef struct {
+  var v;
+  texpr te;
+  size_t tei;
+} subexpr;
+
+#define MAX_TEXPRS 16
+typedef struct {
+  texpr te[MAX_TEXPRS];
+  size_t sz;
+} texpr_pool;
+
+typedef struct {
+  subexpr sube[MAX_TEXPRS];
+  size_t sz;
+} subexpr_pool;
+
+var parse_var(const ltoken_pool *ltp, size_t *curt)
 {
-  size_t curt = 0;
-  return parse_texpr(ltokens, &curt);
+  var v = {0};
+  assert(ltp->tn[*curt].type == var_e);
+  v.sym = ltp->tn[(*curt)++].sym;
+  return v;
 }
 
-texpr* parse_texpr(const ltokens *ltokens, size_t *curt)
+vartexpr parse_vartexpr(const ltoken_pool *ltp, size_t *curt)
 {
-  if (*curt >= ltokens->sz) return NULL;
-  texpr *texpr = {0};
-  if (ltokens->tn[*curt].type == op_br_e)
-    texpr->btexpr = parse_btexpr(ltokens, curt);
-  else
-    texpr->nbtexpr = parse_nbtexpr(ltokens, curt);
-  // SUBEXPR !!!
-  texpr->atexpr = parse_texpr(ltokens, curt);
-  return texpr;
-}
-
-btexpr* parse_btexpr(const ltokens *ltokens, size_t *curt)
-{
-  assert(ltokens->tn[*curt++].type == op_br_e);
-  btexpr *btexpr = {0};
-  btexpr->nbtexpr = parse_nbtexpr(ltokens, curt);
-  assert(ltokens->tn[*curt++].type == cl_br_e);
-  return btexpr;
-}
-
-nbtexpr* parse_nbtexpr(const ltokens *ltokens, size_t *curt)
-{
-  nbtexpr *nbtexpr = {0};
-  if (ltokens->tn[*curt].type == lambda_e)
-    nbtexpr->ltexpr = parse_ltexpr(ltokens, curt);
-  else
-    nbtexpr->vartexpr = parse_vartexpr(ltokens, curt);
-  return nbtexpr;
-}
-
-ltexpr* parse_ltexpr(const ltokens *ltokens, size_t *curt)
-{
-  ltexpr *ltexpr = {0};
-  assert(ltokens->tn[*curt++].type == lambda_e);
-  ltexpr->bvartexpr = parse_vartexpr(ltokens, curt);
-  assert(ltokens->tn[*curt++].type == dot_e);
-  ltexpr->fvartexpr = parse_vartexpr(ltokens, curt);
-  return ltexpr;
-}
-
-vartexpr* parse_vartexpr(const ltokens *ltokens, size_t *curt)
-{
-  vartexpr *vartexpr = {0};
-  size_t vari = 0;
-  assert(ltokens->tn[*curt].type == var_e);
-  while (ltokens->tn[*curt].type == var_e)
+  vartexpr varte = {0};
+  size_t vi = 0;
+  assert(ltp->tn[*curt].type == var_e);
+  while (ltp->tn[*curt].type == var_e)
   {
-    assert(vari < MAX_VARTEXPR_VARS);
-    vartexpr->vars[vari++] = parse_var(ltokens, curt);
+    assert(vi < MAX_VARTEXPR_VARS);
+    varte.vars[vi++] = parse_var(ltp, curt);
   }
-  return vartexpr;
+  varte.sz = vi;
+  return varte;
 }
 
-var* parse_var(const ltokens *ltokens, size_t *curt)
+ltexpr parse_ltexpr(const ltoken_pool *ltp, size_t *curt)
 {
-  var *var = {0};
-  assert(ltokens->tn[*curt].type == var_e);
-  var->sym = ltokens->tn[*curt++].sym;
-  return var;
+  ltexpr lte = {0};
+  assert(ltp->tn[(*curt)++].type == lambda_e);
+  lte.bvarte = parse_vartexpr(ltp, curt);
+  assert(ltp->tn[(*curt)++].type == dot_e);
+  lte.fvarte = parse_vartexpr(ltp, curt);
+  return lte;
+}
+
+texpr parse_nbtexpr(const ltoken_pool *ltp, size_t *curt)
+{
+  texpr te = {0};
+  if (ltp->tn[*curt].type == lambda_e)
+  {
+    te.lte = parse_ltexpr(ltp, curt);
+    te.tep.type = ltexpr_e;
+  }
+  else
+  {
+    te.varte = parse_vartexpr(ltp, curt);
+    te.tep.type = vartexpr_e;
+  }
+  return te;
+}
+
+texpr parse_btexpr(const ltoken_pool *ltp, size_t *curt)
+{
+  assert(ltp->tn[(*curt)++].type == op_br_e);
+  texpr te = parse_nbtexpr(ltp, curt);
+  assert(ltp->tn[(*curt)++].type == cl_br_e);
+  return te;
+}
+
+texpr parse_texpr(const ltoken_pool *ltp, size_t *curt)
+{
+  texpr te = {0};
+  if (ltp->tn[*curt].type == op_br_e)
+    te = parse_btexpr(ltp, curt);
+  else
+    te = parse_nbtexpr(ltp, curt);
+  return te;
+}
+
+subexpr parse_subexpr(const ltoken_pool *ltp, size_t *curt)
+{
+  assert(ltp->tn[(*curt)++].type == op_sqbr_e);
+  subexpr sube = {0};
+  sube.v = parse_var(ltp, curt);
+  assert(ltp->tn[(*curt)++].type == dash_e);
+  assert(ltp->tn[(*curt)++].type == arrow_e);
+  sube.te = parse_texpr(ltp, curt);
+  assert(ltp->tn[(*curt)++].type == cl_sqbr_e);
+  return sube;
+}
+
+void parse_expr_from_tokens_to_pool(const ltoken_pool *ltp, texpr_pool *tep, subexpr_pool *subep)
+{
+  size_t curt = 0, tei = 0, subei = 0;
+  while (curt < ltp->sz)
+  {
+    assert(tei < MAX_TEXPRS);
+    tep->te[tei] = parse_texpr(ltp, &curt);
+    if (ltp->tn[curt].type == op_sqbr_e)
+    {
+      subep->sube[subei] = parse_subexpr(ltp, &curt);
+      subep->sube[subei].tei = tei;
+      ++subei;    
+    }
+    ++tei;
+  }
+  tep->sz = tei;
+  subep->sz = subei;
+}
+
+void debug_texpr(const texpr_pool *tep)
+{
 }
 
 #endif
