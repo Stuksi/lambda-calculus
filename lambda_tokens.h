@@ -36,10 +36,9 @@ typedef struct {
   size_t sz;
 } ltoken_pool;
 
-ltoken_pool tokenize_expr(const char *expr)
+void tkzexpr(ltoken_pool *ltp, const char *expr)
 {
   size_t lti = 0;
-  ltoken_pool ltp = {0};
 
   while (*expr != '\0')
   {
@@ -61,19 +60,44 @@ ltoken_pool tokenize_expr(const char *expr)
     else if (*expr >= 'a' && *expr <= 'z') lt.type = var_e;
     else assert(false);
 
-    ltp.tn[lti++] = lt;
+    ltp->tn[lti++] = lt;
     expr++;
   }
 
-  ltp.sz = lti;
-  return ltp;
+  ltp->sz = lti;
 }
 
-void debug_tokens(const ltoken_pool *ltp)
+char *strltokentype(ltoken_e type)
 {
-  printf("DEBUG: Tokens\n");
+  switch (type)
+  {
+  case op_br_e:
+    return "open_bracket";
+  case cl_br_e:
+    return "closed_bracket";
+  case op_sqbr_e:
+    return "open_square_bracket";
+  case cl_sqbr_e:
+    return "closed_square_bracket";
+  case var_e:
+    return "variable";
+  case lambda_e:
+    return "lambda";
+  case dot_e:
+    return "dot";
+  case dash_e:
+    return "dash";
+  case arrow_e:
+    return "arrow";
+  }
+  assert(false);
+}
+
+void dbgltokens(const ltoken_pool *ltp)
+{
+  printf("DEBUG: Lambda Tokens\n");
   for (size_t i = 0; i < ltp->sz; ++i)
-    printf("%d, %c\n", ltp->tn[i].type, ltp->tn[i].sym);
+    printf("  %s, %c\n", strltokentype(ltp->tn[i].type), ltp->tn[i].sym);
   printf("\n");
 }
 
