@@ -1,32 +1,43 @@
 require_relative 'lambda_tokens'
 
-module LambdaExpression
-  class NonBracketedTerms
-    attr_reader :terms, :substitution_term
+module Lambda
+  private
 
-    def initialize(terms, substitution_term = nil)
+  ACCEPTED_VARIABLE_SYMBOLS = ('a'..'z').to_a
+
+  class NonBracketedTerm
+    attr_reader :terms, :substitution
+
+    def initialize(terms, substitution = nil)
       @terms = terms
-      @substitution_term = substitution_term
+      @substitution = substitution
     end
 
-    def substitute(passed_substitution_term = nil)
-      substituted_terms = terms.map { |term| term.substitute(substitution_term) }
-      substituted_terms = substituted_terms.map { |term| term.substitute(passed_substitution_term) } if passed_substitution_term
-      substituted_terms
+    def substitute(extended_substitution = nil)
+      if substitution
+        substituted_substitution = SubstitutionTerm.new(substitution.variable, substitution.term.substitute)
+      end
+
+      substituted_terms = terms.map { |term| term.substitute(substituted_substitution) }
+      if extended_substitution
+        substituted_terms.map! { |term| term.substitute(extended_substitution) }
+      end
+
+      self.class.new(substituted_terms)
     end
 
     def free_variables
-      terms.map(&:free_variables)
+      terms.map(&:free_variables).flatten
     end
 
     def to_s
-      "#{terms.map(&:to_s).join}#{substitution_term}"
+      "#{terms.map(&:to_s).join}#{substitution}"
     end
   end
 
-  class BracketedTerms < NonBracketedTerms
+  class BracketedTerm < NonBracketedTerm
     def to_s
-      "(" + super + ")"
+      "(#{terms.map(&:to_s).join})#{substitution}"
     end
   end
 
@@ -51,44 +62,45 @@ module LambdaExpression
       @term = term
     end
 
-    def substitute(substitution_term)
+    def substitute(substitution)
+      substituted_term = term.substitute
+      return LambdaTerm.new(bound_variables, substituted_term) unless substitution
+
       bound_variables_symbols = bound_variables.map(&:symbol)
-      free_variables_symbols = free_variables.map(&:symbol)
-      substitution_term_variable_symbol = substitution_term.variable.symbol
-      substitution_term_free_variable_symbols = substitution_term.term.free_variables.map(&:symbol)
+      free_variables_symbols = substituted_term.free_variables
+      substitution_variable_symbol = substitution.variable.symbol
+      substitution_free_variable_symbols = substitution.term.free_variables
 
-      if bound_variables_symbols.include?(substitution_term_variable_symbol)
-        self
-      elsif (
-        !bound_variables_symbols.include?(substitution_term_variable_symbol)   &&
-        !free_variables_symbols.include?(substitution_term_variable_symbol)                    ||
-        substitution_term_free_variable_symbols & bound_variables_symbols == nil
-      )
-        LambdaTerm.new(bound_variables, term.substitute(substitution_term))
+      if bound_variables_symbols.include?(substitution_variable_symbol)
+        LambdaTerm.new(bound_variables, substituted_term)
+      elsif !bound_variables_symbols.include?(substitution_variable_symbol)   &&
+            (!free_variables_symbols.include?(substitution_variable_symbol)   ||
+            substitution_free_variable_symbols & bound_variables_symbols === [])
+        LambdaTerm.new(bound_variables, substituted_term.substitute(substitution))
       else
-        problem_variable_symbols = substitution_term_free_variable_symbols & bound_variables_symbols
-        unused_variable_symbols = ('a'..'z') - (free_variables_symbols | substitution_term_free_variable_symbols)
-        raise 'FATAL: too many symbols already used' if problem_variable_symbols.length > unused_variable_symbols.length
+        problem_variable_symbols = substitution_free_variable_symbols & bound_variables_symbols
+        unused_variable_symbols = ACCEPTED_VARIABLE_SYMBOLS - (free_variables_symbols | substitution_free_variable_symbols)
 
-        variable_symbols_mapping = problem_variable_symbols.zip(unused_variable_symbols).to_h
+        if problem_variable_symbols.length > unused_variable_symbols.length
+          raise SubstitutionException.new('FATAL: too many symbols already used')
+        end
+
+        rename_mapping = problem_variable_symbols.zip(unused_variable_symbols).to_h
         renamed_bound_variables = bound_variables_symbols.map do |symbol|
-          if variable_symbols_mapping.key?(symbol)
-            VariableTerm.new(variable_symbols_mapping[symbol])
+          if rename_mapping.key?(symbol)
+            VariableTerm.new(rename_mapping[symbol])
           else
             VariableTerm.new(symbol)
           end
         end
 
-        renamed_term = term.clone
-        variable_symbols_mapping.map do |current_symbol, renamed_symbol|
-          renaming_substitution_term = SubstitutionTerm.new(
-            VariableTerm.new(current_symbol),
-            VariableTerm.new(renamed_symbol)
-          )
-          renamed_term.substitute(renaming_substitution_term)
+        renamed_term = substituted_term
+        rename_mapping.each do |current_symbol, renamed_symbol|
+          renaming_substitution = SubstitutionTerm.new(VariableTerm.new(current_symbol), VariableTerm.new(renamed_symbol))
+          renamed_term = renamed_term.substitute(renaming_substitution)
         end
+        renamed_term = renamed_term.substitute(substitution)
 
-        renamed_term.substitute(substitution_term)
         LambdaTerm.new(renamed_bound_variables, renamed_term)
       end
     end
@@ -98,9 +110,7 @@ module LambdaExpression
     end
 
     def to_s
-      stringlified_bound_variables = bound_variables.map(&:to_s).join
-
-      "^#{stringlified_bound_variables}.#{term}"
+      "^#{bound_variables.map(&:to_s).join}.#{term}"
     end
   end
 
@@ -111,112 +121,120 @@ module LambdaExpression
       @symbol = symbol
     end
 
-    def substitute(substitution_term)
-      return self.clone unless substitution_term
-      puts substitution_term
-
-      if symbol === substitution_term.variable.symbol
-        substitution_term.term
+    def substitute(substitution)
+      if substitution&.variable&.symbol === symbol
+        substitution.term
       else
-        self.clone
+        VariableTerm.new(symbol)
       end
     end
 
     def free_variables
-      self.clone
+      [symbol]
     end
 
     def to_s
-      symbol
+      "#{symbol}"
     end
   end
 
+  class ParseException < Exception
+  end
+
+  class SubstitutionException < Exception
+  end
+
   class << self
-    def parse(expression)
-      tokens = LambdaTokenizer.tokenize_expression(expression)
-      tokens_iterator = tokens.to_enum
-
-      NonBracketedTerms.new(parse_term(tokens_iterator))
-    end
-
-    private
-
     def parse_term(tokens_iterator)
       return if tokens_iterator.peek.type === :end                   ||
                 tokens_iterator.peek.type === :closed_bracket        ||
                 tokens_iterator.peek.type === :closed_square_bracket
 
-      if tokens_iterator.peek.type === :open_bracket
-        bracketed_terms = parse_bracketed_terms(tokens_iterator)
-      else
-        non_bracketed_term =
-          if tokens_iterator.peek.type === :lambda
-            parse_lambda_term(tokens_iterator)
-          elsif tokens_iterator.peek.type === :variable
-            parse_variable_term(tokens_iterator)
-          else
-            raise_invalid_type_error
-          end
-      end
+      term =
+        if tokens_iterator.peek.type === :open_bracket
+          parse_bracketed_term(tokens_iterator)
+        elsif tokens_iterator.peek.type === :lambda
+          parse_lambda_term(tokens_iterator)
+        elsif tokens_iterator.peek.type === :variable
+          parse_variable_term(tokens_iterator)
+        else
+          raise_parse_exception
+        end
 
-      substitution_term = parse_substitution_term(tokens_iterator) if tokens_iterator.peek.type === :open_square_bracket
-      [
-        bracketed_terms ?
-          BracketedTerms.new(bracketed_terms, substitution_term) :
-          NonBracketedTerms.new([non_bracketed_term], substitution_term),
-        *parse_term(tokens_iterator)
-      ]
+      [term, *parse_term(tokens_iterator)]
     end
 
-    def parse_bracketed_terms(tokens_iterator)
-      raise_invalid_type_error unless tokens_iterator.next.type === :open_bracket
+    def parse_bracketed_term(tokens_iterator)
+      raise_parse_exception unless tokens_iterator.next.type === :open_bracket
       terms = parse_term(tokens_iterator)
-      raise_invalid_type_error unless tokens_iterator.next.type === :closed_bracket
 
-      terms
+      raise_parse_exception unless tokens_iterator.next.type === :closed_bracket
+      substitution = parse_substitution_term(tokens_iterator) if tokens_iterator.peek.type === :open_square_bracket
+
+      BracketedTerm.new(terms, substitution)
     end
 
     def parse_substitution_term(tokens_iterator)
-      raise_invalid_type_error unless tokens_iterator.next.type === :open_square_bracket
-      variable = parse_variable_term(tokens_iterator)
-      raise_invalid_type_error unless tokens_iterator.next.type === :dash
-      raise_invalid_type_error unless tokens_iterator.next.type === :arrow
-      term = NonBracketedTerms.new(parse_term(tokens_iterator))
-      raise_invalid_type_error unless tokens_iterator.next.type === :closed_square_bracket
+      raise_parse_exception unless tokens_iterator.next.type === :open_square_bracket
+      variable = VariableTerm.new(tokens_iterator.next.symbol)
+
+      raise_parse_exception unless tokens_iterator.next.type === :dash
+      raise_parse_exception unless tokens_iterator.next.type === :arrow
+
+      term = NonBracketedTerm.new(parse_term(tokens_iterator))
+      raise_parse_exception unless tokens_iterator.next.type === :closed_square_bracket
 
       SubstitutionTerm.new(variable, term)
     end
 
     def parse_lambda_term(tokens_iterator)
-      raise_invalid_type_error unless tokens_iterator.next.type === :lambda
+      raise_parse_exception unless tokens_iterator.next.type === :lambda
       bound_variables = []
       while tokens_iterator.peek.type != :dot
-        raise_invalid_type_error unless tokens_iterator.peek.type === :variable
+        raise_parse_exception unless tokens_iterator.peek.type === :variable
         bound_variables << VariableTerm.new(tokens_iterator.next.symbol)
       end
-      raise_invalid_type_error unless tokens_iterator.next.type === :dot
-      term = NonBracketedTerms.new(parse_term(tokens_iterator))
 
-      LambdaTerm.new(bound_variables, term)
+      raise_parse_exception unless tokens_iterator.next.type === :dot
+      term = NonBracketedTerm.new(parse_term(tokens_iterator))
+      substitution = parse_substitution_term(tokens_iterator) if tokens_iterator.peek.type === :open_square_bracket
+
+      NonBracketedTerm.new([LambdaTerm.new(bound_variables, term)], substitution)
     end
 
     def parse_variable_term(tokens_iterator)
-      raise_invalid_type_error unless tokens_iterator.peek.type === :variable
+      raise_parse_exception unless tokens_iterator.peek.type === :variable
+      symbol = tokens_iterator.next.symbol
+      substitution = parse_substitution_term(tokens_iterator) if tokens_iterator.peek.type === :open_square_bracket
 
-      VariableTerm.new(tokens_iterator.next.symbol)
+      NonBracketedTerm.new([VariableTerm.new(symbol)], substitution)
     end
 
-    def raise_invalid_type_error
-      raise 'FATAL: ivalid token type'
+    def raise_parse_exception
+      raise ParseException.new('FATAL: ivalid expression')
     end
   end
 end
 
-module LambdaParsedExpressionDebugger
+module Lambda
+  class Expression < NonBracketedTerm
+  end
+
   class << self
-    def debug(parsed_expression)
-      puts 'DEBUG: Lambda Expression Term'
-      puts parsed_expression
+    def parse(expression)
+      tokens = tokenize_expression(expression)
+      tokens_iterator = tokens.to_enum
+
+      Expression.new(parse_term(tokens_iterator))
+    end
+  end
+end
+
+module LambdaDebugger
+  class << self
+    def debug_expression(expression)
+      puts 'DEBUG: Lambda Expression'
+      puts expression
       puts
     end
   end

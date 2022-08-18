@@ -1,5 +1,7 @@
-module LambdaTokenizer
-  class LambdaToken
+module Lambda
+  private
+
+  class Token
     attr_reader :type, :symbol
 
     def initialize(type, symbol)
@@ -8,31 +10,36 @@ module LambdaTokenizer
     end
   end
 
+  class TokenException < Exception
+  end
+end
+
+module Lambda
   class << self
     def tokenize_expression(expression)
       expression.chars.map do |character|
         case character
         when ' '      then next
-        when '('      then LambdaToken.new(:open_bracket, '(')
-        when ')'      then LambdaToken.new(:closed_bracket, ')')
-        when '['      then LambdaToken.new(:open_square_bracket, '[')
-        when ']'      then LambdaToken.new(:closed_square_bracket, ']')
-        when '^'      then LambdaToken.new(:lambda, '^')
-        when '.'      then LambdaToken.new(:dot, '.')
-        when '-'      then LambdaToken.new(:dash, '-')
-        when '>'      then LambdaToken.new(:arrow, '>')
-        when 'a'..'z' then LambdaToken.new(:variable, character)
-        else raise("FATAL: invalid token #{character}")
+        when '('      then Token.new(:open_bracket, '(')
+        when ')'      then Token.new(:closed_bracket, ')')
+        when '['      then Token.new(:open_square_bracket, '[')
+        when ']'      then Token.new(:closed_square_bracket, ']')
+        when '^'      then Token.new(:lambda, '^')
+        when '.'      then Token.new(:dot, '.')
+        when '-'      then Token.new(:dash, '-')
+        when '>'      then Token.new(:arrow, '>')
+        when 'a'..'z' then Token.new(:variable, character)
+        else raise TokenException.new("FATAL: invalid token #{character}")
         end
-      end.compact.push(LambdaToken.new(:end, '0'))
+      end.compact.push(Token.new(:end, '0'))
     end
   end
 end
 
-module LambdaTokensDebugger
+module LambdaDebugger
   class << self
-    def debug(tokens)
-      puts 'DEBUG: Lambda Tokenizer Token'
+    def debug_tokens(tokens)
+      puts 'DEBUG: Lambda Tokens'
       tokens.each { |token| puts "  #{token.type}, #{token.symbol}" }
       puts
     end

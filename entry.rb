@@ -1,7 +1,11 @@
 require_relative 'lambda_expressions'
 
-# expression = '(^ab.ab)[a->^z.z](abcde)(^a.a)zz[z -> f]'
-expression = '(aa(bb))^ab.zab[a->^a.z]'
-parsed_expression = LambdaExpression.parse(expression)
-puts parsed_expression.substitute
-LambdaParsedExpressionDebugger.debug(parsed_expression)
+begin
+  expression = '(^ab.ab)[a->^z.z](abcde)(^c.a)[a->c]zz[z -> f]'
+  parsed_expression = Lambda.parse(expression)
+  LambdaDebugger.debug_expression(parsed_expression)
+  substituted_expression = parsed_expression.substitute
+  LambdaDebugger.debug_expression(substituted_expression)
+rescue Exception => exception
+  puts exception
+end
