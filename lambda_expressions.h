@@ -26,6 +26,13 @@
 
 #include "lambda_tokens.h"
 
+#define ACCEPTED_VARS 26
+static char avars[ACCEPTED_VARS] = {
+  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
+  'g', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+  's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+};
+
 typedef struct {
   char sym;
 } var;
@@ -219,6 +226,23 @@ void strsubexpr(const subexpr *sube, char *strsube)
   strtexpr(&sube->te, strte);
   strcat(strsube, strte);
   strcat(strsube, "]");
+}
+
+bool avar(char sym)
+{
+  return sym >= 'a' && sym <= 'z';
+}
+
+void subtexpr(const texpr_pool *tep, const subexpr_pool *subep, texpr_pool *step)
+{
+  for (size_t i = 0; i < subep->sz; ++i)
+  {
+    bool ravars[ACCEPTED_VARS] = {0};
+    char strte[MAX_LTOKENS] = {0};
+    strtexpr(&tep->te[subep->sube[i].tei], strte);
+    for (size_t j = 0; j < strlen(strte); ++j)
+      if (avar(strte[j])) ravars[strte[j] - 'a'] = true;
+  }
 }
 
 void dbgtexprs(const texpr_pool *tep)

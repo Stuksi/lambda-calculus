@@ -67,7 +67,7 @@ void tkzexpr(ltoken_pool *ltp, const char *expr)
   ltp->sz = lti;
 }
 
-char *strltokentype(ltoken_e type)
+char *strltokentype(const ltoken_e type)
 {
   switch (type)
   {
