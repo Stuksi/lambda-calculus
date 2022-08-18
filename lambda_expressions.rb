@@ -1,3 +1,13 @@
+=begin
+  Lambda Expression Grammar:
+    Expression       := (NonBracketedTerm | BracketedTerm), [SubstitutionTerm], (Expression | "")
+    BracketedTerm    := (, NonBracketedTerm, )
+    NonBracketedTerm := LambdaTerm | VariableTerm
+    SubstitutionTerm := [, VariableTerm, -, >, Expression, ]
+    LambdaTerm       := ^, VariableTerm+, ., Expression
+    VariableTerm     := a | ... | z
+=end
+
 require_relative 'lambda_tokens'
 
 module Lambda

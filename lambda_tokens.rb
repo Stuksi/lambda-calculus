@@ -1,3 +1,8 @@
+=begin
+  Lambda Expression Tokens:
+    ( ) [ ] a-z ^ . - >
+=end
+
 module Lambda
   private
 
@@ -39,7 +44,7 @@ end
 module LambdaDebugger
   class << self
     def debug_tokens(tokens)
-      puts 'DEBUG: Lambda Tokens'
+      puts 'DEBUG: Lambda Token'
       tokens.each { |token| puts "  #{token.type}, #{token.symbol}" }
       puts
     end
