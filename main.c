@@ -7,7 +7,7 @@ static texpr_pool g_tep = {0};
 
 int main()
 {
-  tkzexpr(&g_ltp, "^ab.ab[a->^z.z]");
+  tkzexpr(&g_ltp, "(^ab.ab)[a->^z.z](abcde)(^a.a)zz[z -> f]");
   dbgltokens(&g_ltp);
 
   ptokens(&g_ltp, &g_tep, &g_subep);

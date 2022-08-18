@@ -127,6 +127,7 @@ texpr pbtexpr(const ltoken_pool *ltp, size_t *curt)
 {
   assert(ltp->tn[(*curt)++].type == op_br_e);
   texpr te = pnbtexpr(ltp, curt);
+  te.tep.br = true;
   assert(ltp->tn[(*curt)++].type == cl_br_e);
   return te;
 }
