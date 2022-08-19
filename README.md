@@ -8,3 +8,5 @@ An easy implementation of some core lambda calculus concepts
 ### To Do:
 - Check other lecture materials for more interesting tasks to work on
 - Examples
+- Nameless expressions
+- Specs
