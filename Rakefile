@@ -14,10 +14,12 @@ rescue Exception => exception
 end
 
 task :debug_nameless_expression do
-  nameless_expression = '^000(^01)(^23)00000010[0->(^10)]'
+  nameless_expression = '((^1)(^01))[0->^01]'
 
   parsed_nameless_expression = Lambda::NamelessExpressionParser.parse(nameless_expression)
   Lambda::Logger.log_nameless_expression(parsed_nameless_expression)
+  substituted_nameless_expression = parsed_nameless_expression.substitute
+  Lambda::Logger.log_nameless_expression(substituted_nameless_expression)
 rescue Exception => exception
   Lambda::Logger.log_exception("#{exception}")
 end

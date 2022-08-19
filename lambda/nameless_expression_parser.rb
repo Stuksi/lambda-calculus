@@ -51,7 +51,7 @@ module Lambda
 
       def parse_substitution_term(tokens_iterator)
         raise_parse_exception unless tokens_iterator.next.type === :open_square_bracket
-        variable = NamelessExpression::Terms::VariableTerm.new(tokens_iterator.next.symbol)
+        variable = NamelessExpression::Terms::VariableTerm.new(tokens_iterator.next.symbol.to_i)
 
         raise_parse_exception unless tokens_iterator.next.type === :dash
         raise_parse_exception unless tokens_iterator.next.type === :arrow
@@ -64,12 +64,9 @@ module Lambda
 
       def parse_lambda_term(tokens_iterator)
         raise_parse_exception unless tokens_iterator.next.type === :lambda
-        variables = []
-        while tokens_iterator.peek.type === :variable
-          variables << NamelessExpression::Terms::VariableTerm.new(tokens_iterator.next.symbol)
-        end
+        term = NamelessExpression::Terms::NonBracketedTerm.new(parse_term(tokens_iterator))
 
-        NamelessExpression::Terms::LambdaTerm.new(variables)
+        NamelessExpression::Terms::LambdaTerm.new(term)
       end
 
       def parse_variable_term(tokens_iterator)
@@ -78,7 +75,7 @@ module Lambda
         substitution = parse_substitution_term(tokens_iterator) if tokens_iterator.peek.type === :open_square_bracket
 
         NamelessExpression::Terms::NonBracketedTerm.new(
-          [NamedExpression::Terms::VariableTerm.new(symbol)],
+          [NamelessExpression::Terms::VariableTerm.new(symbol.to_i)],
           substitution
         )
       end

@@ -14,7 +14,7 @@ module Lambda
           if substitution&.variable&.symbol === symbol
             substitution.term
           else
-            VariableTerm.new(symbol)
+            self.class.new(symbol)
           end
         end
 
