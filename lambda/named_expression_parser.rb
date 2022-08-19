@@ -1,13 +1,3 @@
-=begin
-  Named Lambda Expression Grammar:
-    NamedExpression  := (NonBracketedTerm | BracketedTerm), [SubstitutionTerm], (NamedExpression | "")
-    BracketedTerm    := (, NonBracketedTerm, )
-    NonBracketedTerm := LambdaTerm | VariableTerm
-    SubstitutionTerm := [, VariableTerm, -, >, NamedExpression, ]
-    LambdaTerm       := ^, VariableTerm+, ., NamedExpression
-    VariableTerm     := a | ... | z
-=end
-
 require_relative 'named_expression/named_expression'
 require_relative 'named_expression/terms/bracketed_term'
 require_relative 'named_expression/terms/lambda_term'
@@ -82,9 +72,8 @@ module Lambda
 
         raise_parse_exception unless tokens_iterator.next.type === :dot
         term = NamedExpression::Terms::NonBracketedTerm.new(parse_term(tokens_iterator))
-        substitution = parse_substitution_term(tokens_iterator) if tokens_iterator.peek.type === :open_square_bracket
 
-        NamedExpression::Terms::NonBracketedTerm.new([NamedExpression::Terms::LambdaTerm.new(bound_variables, term)], substitution)
+        NamedExpression::Terms::LambdaTerm.new(bound_variables, term)
       end
 
       def parse_variable_term(tokens_iterator)
@@ -92,14 +81,17 @@ module Lambda
         symbol = tokens_iterator.next.symbol
         substitution = parse_substitution_term(tokens_iterator) if tokens_iterator.peek.type === :open_square_bracket
 
-        NamedExpression::Terms::NonBracketedTerm.new([NamedExpression::Terms::VariableTerm.new(symbol)], substitution)
+        NamedExpression::Terms::NonBracketedTerm.new(
+          [NamedExpression::Terms::VariableTerm.new(symbol)],
+          substitution
+        )
       end
 
       def raise_parse_exception
-        raise ParseException.new('FATAL: ivalid expression')
+        raise NamedExpressionParserException.new('FATAL: ivalid expression')
       end
     end
   end
 
-  class ParseException < Exception; end
+  class NamedExpressionParserException < Exception; end
 end

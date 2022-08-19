@@ -1,12 +1,41 @@
 # Lamba Calculus
 An easy implementation of some core lambda calculus concepts
 
-### Already Implemented:
-- Lambda Expression Parsing
-- Substitutions
+## Tokens
+### Named Lambda Expression:
+`( ) [ ] a-z ^ . - >`
 
-### To Do:
-- Check other lecture materials for more interesting tasks to work on
+### Nameless Lambda Expression:
+`( ) [ ] 0-9 ^ - >`
+
+## Grammar
+### Named Lambda Expression:
+```
+NamedExpression  := (NonBracketedTerm | BracketedTerm), [SubstitutionTerm], (NamedExpression | "")
+BracketedTerm    := (, NonBracketedTerm, )
+NonBracketedTerm := LambdaTerm | VariableTerm
+SubstitutionTerm := [, VariableTerm, -, >, NamedExpression, ]
+LambdaTerm       := ^, VariableTerm+, ., NamedExpression
+VariableTerm     := a | ... | z
+```
+
+### Nameless Lambda Expression:
+```
+NamelessExpression := (NonBracketedTerm | BracketedTerm), [SubstitutionTerm], (NamelessExpression | "")
+BracketedTerm      := (, NonBracketedTerm, )
+NonBracketedTerm   := LambdaTerm | VariableTerm
+SubstitutionTerm   := [, VariableTerm, -, >, NamelessExpression, ]
+LambdaTerm         := ^, VariableTerm+
+VariableTerm       := 0 | ... | 9
+```
+
+## Already Implemented:
+- Named Lambda Expression Parsing
+- Named Lambda Expression Substitutions
+
+## To Do:
+- Nameless Expressions Parsing
+- Nameless Expressions Substitutions
+- Bidirectional Named To Nameless Expressions Conversion
 - Examples
-- Nameless expressions
 - Specs

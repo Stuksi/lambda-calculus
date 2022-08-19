@@ -1,7 +1,7 @@
 require_relative 'token'
 
 module Lambda
-  module NamedExpression
+  module NamelessExpression
     module Tokens
       class Tokenizer
         class << self
@@ -14,18 +14,17 @@ module Lambda
               when '['      then Token.new(:open_square_bracket, '[')
               when ']'      then Token.new(:closed_square_bracket, ']')
               when '^'      then Token.new(:lambda, '^')
-              when '.'      then Token.new(:dot, '.')
               when '-'      then Token.new(:dash, '-')
               when '>'      then Token.new(:arrow, '>')
-              when 'a'..'z' then Token.new(:variable, character)
-              else raise NamedExpressionTokenizerException.new("FATAL: invalid token #{character}")
+              when '0'..'9' then Token.new(:variable, character)
+              else raise NamelessExpressionTokenizerException.new("FATAL: invalid token #{character}")
               end
             end.compact.push(Token.new(:end, '0'))
           end
         end
       end
 
-      class NamedExpressionTokenizerException < Exception; end
+      class NamelessExpressionTokenizerException < Exception; end
     end
   end
 end
