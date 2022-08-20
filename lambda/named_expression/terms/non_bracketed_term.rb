@@ -25,7 +25,11 @@ module Lambda
         def to_nameless(lambdas, bound_variables)
           nameless_terms = self.substitute.terms.map { |term| term.to_nameless(lambdas, bound_variables) }
 
-          self.class.new(nameless_terms)
+          if self.class == NonBracketedTerm
+            NamelessExpression::Terms::NonBracketedTerm.new(nameless_terms)
+          else
+            NamelessExpression::Terms::BracketedTerm.new(nameless_terms)
+          end
         end
 
         def free_variables(bound_variables = [])

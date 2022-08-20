@@ -29,6 +29,10 @@ module Lambda
         def to_s
           "^#{term}"
         end
+
+        def ==(lambda_term)
+          self.class == lambda_term.class && term == lambda_term.term
+        end
       end
     end
   end

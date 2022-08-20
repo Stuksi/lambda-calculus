@@ -80,7 +80,7 @@ describe Lambda::NamedExpression::Terms::VariableTerm do
     context 'with free variable' do
       let(:bound_variables) { [described_class.new('y')] }
 
-      it 'returns the variable list' do
+      it 'returns the variable as list' do
         expect(subject.free_variables(bound_variables)).to eq([subject])
       end
     end

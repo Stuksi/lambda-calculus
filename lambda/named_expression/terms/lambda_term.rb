@@ -58,17 +58,14 @@ module Lambda
             accumulated_bound_variables.merge(bound_variables_lambda_mapping)
           )
 
-          nameless_lambda_term = NamelessExpression::Terms::NonBracketedTerm.new(
-            [NamelessExpression::Terms::LambdaTerm.new(nameless_term)]
-          )
-
+          nameless_lambda_term = nameless_term
           (bound_variables.length - 1).times do
             nameless_lambda_term = NamelessExpression::Terms::NonBracketedTerm.new(
               [NamelessExpression::Terms::LambdaTerm.new(nameless_lambda_term)]
             )
           end
 
-          nameless_lambda_term
+          NamelessExpression::Terms::LambdaTerm.new(nameless_lambda_term)
         end
 
         def free_variables(accumulated_bound_variables = [])
