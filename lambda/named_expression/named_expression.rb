@@ -18,6 +18,10 @@ module Lambda
       def to_s
         term.to_s
       end
+
+      def ==(named_expression)
+        self.class == named_expression.class && self.term == named_expression.term
+      end
     end
   end
 end
