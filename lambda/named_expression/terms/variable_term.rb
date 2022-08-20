@@ -11,7 +11,7 @@ module Lambda
           @symbol = symbol
         end
 
-        def substitute(substitution)
+        def substitute(substitution = nil)
           if substitution && substitution.variable.symbol == symbol
             substitution.term
           else
@@ -27,7 +27,7 @@ module Lambda
           end
         end
 
-        def free_variables(bound_variables)
+        def free_variables(bound_variables = [])
           if bound_variables.include?(self)
             []
           else
@@ -40,8 +40,14 @@ module Lambda
         end
 
         def ==(variable_term)
-          self.class == variable_term.class && self.symbol == variable_term.symbol
+          self.class == variable_term.class && symbol == variable_term.symbol
         end
+
+        def hash
+          symbol.hash
+        end
+
+        alias_method :eql?, :==
       end
 
       class VariableTermException < Exception; end

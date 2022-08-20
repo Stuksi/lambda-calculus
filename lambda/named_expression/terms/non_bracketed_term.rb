@@ -23,20 +23,22 @@ module Lambda
         end
 
         def to_nameless(lambdas, bound_variables)
-          nameless_substitution = substitution.to_nameless if substitution
+          nameless_terms = self.substitute.terms.map { |term| term.to_nameless(lambdas, bound_variables) }
 
-          NamelessExpression::Terms::NonBracketedTerm.new(
-            terms.map { |term| term.to_nameless(lambdas, bound_variables) },
-            nameless_substitution
-          )
+          self.class.new(nameless_terms)
         end
 
-        def free_variables
-          terms.map(&:free_variables).flatten
+        def free_variables(bound_variables = [])
+          terms.map { |term| term.free_variables(bound_variables) }.flatten
         end
 
         def to_s
           "#{terms.map(&:to_s).join}#{substitution}"
+        end
+
+        def ==(non_bracketed_term)
+          self.class == non_bracketed_term.class &&
+          self.terms == non_bracketed_term.terms
         end
       end
     end
