@@ -9,19 +9,12 @@ module Lambda
           @term = term
         end
 
-        def to_nameless
-          NamelessExpression::Terms::SubstitutionTerm.new(
-            variable.to_nameless(0, {}),
-            term.to_nameless(0, {})
-          )
-        end
-
         def to_s
           "[#{variable}->#{term}]"
         end
       end
 
-      class SubstitutionException < Exception; end
+      class SubstitutionTermException < Exception; end
     end
   end
 end
