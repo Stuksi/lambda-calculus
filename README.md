@@ -32,10 +32,10 @@ VariableTerm       := 0 | ... | 9
 ## Already Implemented:
 - Named Lambda Expression Parsing
 - Named Lambda Expression Substitutions
-
-## To Do:
 - Nameless Expressions Parsing
 - Nameless Expressions Substitutions
+
+## To Do:
 - Bidirectional Named To Nameless Expressions Conversion
 - Examples
 - Specs
