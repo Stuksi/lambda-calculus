@@ -18,7 +18,7 @@ module Lambda
               when 'a'..'z' then Token.new(:variable, character)
               else raise NamedExpressionTokenizerException.new("FATAL: invalid token #{character}")
               end
-            end.compact.push(Token.new(:end, '0'))
+            end.compact.push(Token.new(:end, '|'))
           end
         end
       end

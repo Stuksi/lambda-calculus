@@ -7,33 +7,44 @@ module Lambda
         SYMBOLS = ('a'..'z').to_a
 
         def initialize(symbol)
+          raise VariableTermException.new("FATAL: invalid variable symbol #{symbol}") unless self.class::SYMBOLS.include?(symbol)
           @symbol = symbol
         end
 
         def substitute(substitution)
-          if substitution&.variable&.symbol === symbol
+          if substitution && substitution.variable.symbol == symbol
             substitution.term
           else
             self.class.new(symbol)
           end
         end
 
-        def to_nameless(lambdas, bound_variables)
+        def to_nameless(lambdas_depth, bound_variables)
           if bound_variables.key?(symbol)
             NamelessExpression::Terms::VariableTerm.new(bound_variables[symbol])
           else
-            NamelessExpression::Terms::VariableTerm.new(lambdas)
+            NamelessExpression::Terms::VariableTerm.new(lambdas_depth)
           end
         end
 
-        def free_variables
-          [symbol]
+        def free_variables(bound_variables)
+          if bound_variables.include?(self)
+            []
+          else
+            [VariableTerm.new(symbol)]
+          end
         end
 
         def to_s
           "#{symbol}"
         end
+
+        def ==(variable_term)
+          self.class == variable_term.class && self.symbol == variable_term.symbol
+        end
       end
+
+      class VariableTermException < Exception; end
     end
   end
 end
