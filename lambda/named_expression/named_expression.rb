@@ -11,6 +11,12 @@ module Lambda
         term.substitute
       end
 
+      def to_nameless
+        NamelessExpression::NamelessExpression.new(
+          term.to_nameless(0, {})
+        )
+      end
+
       def to_s
         term.to_s
       end

@@ -18,6 +18,14 @@ module Lambda
           end
         end
 
+        def to_nameless(lambdas, bound_variables)
+          if bound_variables.key?(symbol)
+            NamelessExpression::Terms::VariableTerm.new(bound_variables[symbol])
+          else
+            NamelessExpression::Terms::VariableTerm.new(lambdas)
+          end
+        end
+
         def free_variables
           [symbol]
         end

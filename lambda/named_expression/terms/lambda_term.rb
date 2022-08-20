@@ -55,6 +55,29 @@ module Lambda
           end
         end
 
+        def to_nameless(lambdas, accumulated_bound_variables)
+          bound_variables_lambda_mapping = bound_variables.map(&:symbol).map.with_index do |symbol, index|
+            [symbol, lambdas + bound_variables.length - 1 - index]
+          end.to_h
+
+          nameless_term = term.to_nameless(
+            lambdas + bound_variables.length,
+            accumulated_bound_variables.merge(bound_variables_lambda_mapping)
+          )
+
+          nameless_lambda_term = NamelessExpression::Terms::NonBracketedTerm.new(
+            [NamelessExpression::Terms::LambdaTerm.new(nameless_term)]
+          )
+
+          (bound_variables.length - 1).times do
+            nameless_lambda_term = NamelessExpression::Terms::NonBracketedTerm.new(
+              [NamelessExpression::Terms::LambdaTerm.new(nameless_lambda_term)]
+            )
+          end
+
+          nameless_lambda_term
+        end
+
         def free_variables
           term.free_variables
         end

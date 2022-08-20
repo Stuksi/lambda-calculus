@@ -24,6 +24,15 @@ module Lambda
           self.class.new(substituted_terms)
         end
 
+        def to_nameless(lambdas, bound_variables)
+          nameless_substitution = substitution.to_nameless if substitution
+
+          NamelessExpression::Terms::NonBracketedTerm.new(
+            terms.map { |term| term.to_nameless(lambdas, bound_variables) },
+            nameless_substitution
+          )
+        end
+
         def free_variables
           terms.map(&:free_variables).flatten
         end
