@@ -37,5 +37,6 @@ VariableTerm       := 0 | ... | 9
 
 ## To Do:
 - Bidirectional Named To Nameless Expressions Conversion
+- Fix serialization of lambda terms and non bracketed terms with substitution (missing brackets)
 - Examples
 - Specs

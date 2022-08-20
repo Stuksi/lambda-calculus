@@ -12,6 +12,12 @@ module Lambda
         def to_s
           "[#{variable}->#{term}]"
         end
+
+        def ==(substitution_term)
+          self.class == substitution_term.class &&
+          self.variable == substitution_term.variable &&
+          self.term == substitution_term.term
+        end
       end
 
       class SubstitutionTermException < Exception; end
