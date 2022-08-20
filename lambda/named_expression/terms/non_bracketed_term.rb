@@ -1,5 +1,3 @@
-require_relative 'substitution_term'
-
 module Lambda
   module NamedExpression
     module Terms

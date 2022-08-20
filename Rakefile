@@ -1,6 +1,4 @@
-require_relative 'lambda/named_expression_parser'
-require_relative 'lambda/nameless_expression_parser'
-require_relative 'lambda/logger'
+require_relative 'environment'
 
 task :debug_named_expression do
   named_expression = '(^ab.ab)[a->^z.z](abcde)(^c.a)[a->c]zz[z -> f]'

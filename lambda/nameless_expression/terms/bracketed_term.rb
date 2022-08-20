@@ -1,5 +1,3 @@
-require_relative 'non_bracketed_term'
-
 module Lambda
   module NamelessExpression
     module Terms

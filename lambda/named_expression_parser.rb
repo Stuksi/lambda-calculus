@@ -1,11 +1,3 @@
-require_relative 'named_expression/named_expression'
-require_relative 'named_expression/terms/bracketed_term'
-require_relative 'named_expression/terms/lambda_term'
-require_relative 'named_expression/terms/non_bracketed_term'
-require_relative 'named_expression/terms/substitution_term'
-require_relative 'named_expression/terms/variable_term'
-require_relative 'named_expression/tokens/tokenizer'
-
 module Lambda
   class NamedExpressionParser
     class << self

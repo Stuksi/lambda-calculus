@@ -1,6 +1,3 @@
-require_relative 'substitution_term'
-require_relative 'variable_term'
-
 module Lambda
   module NamelessExpression
     module Terms

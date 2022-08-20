@@ -1,11 +1,3 @@
-require_relative 'nameless_expression/nameless_expression'
-require_relative 'nameless_expression/terms/bracketed_term'
-require_relative 'nameless_expression/terms/lambda_term'
-require_relative 'nameless_expression/terms/non_bracketed_term'
-require_relative 'nameless_expression/terms/substitution_term'
-require_relative 'nameless_expression/terms/variable_term'
-require_relative 'nameless_expression/tokens/tokenizer'
-
 module Lambda
   class NamelessExpressionParser
     class << self

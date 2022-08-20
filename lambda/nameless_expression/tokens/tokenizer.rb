@@ -1,5 +1,3 @@
-require_relative 'token'
-
 module Lambda
   module NamelessExpression
     module Tokens
