@@ -12,6 +12,8 @@ module Lambda
             VariableTerm.new(symbol + displacement)
           end
         end
+
+        undef_method :to_nameless, :free_variables
       end
 
       class VariableTermException < Exception; end
