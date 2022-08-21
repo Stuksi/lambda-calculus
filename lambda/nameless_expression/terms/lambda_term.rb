@@ -8,7 +8,7 @@ module Lambda
           @term = term
         end
 
-        def substitute(substitution)
+        def substitute(substitution = nil)
           substituted_term = term.substitute
 
           if substitution

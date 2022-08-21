@@ -1,6 +1,8 @@
 require_relative '../../spec_helper'
 
 describe Lambda::NamedExpression::Terms::LambdaTerm do
+  subject { described_class.new(bound_variables, term) }
+
   let(:bound_variables) do
     [
       Lambda::NamedExpression::Terms::VariableTerm.new('y'),
@@ -17,8 +19,6 @@ describe Lambda::NamedExpression::Terms::LambdaTerm do
       ]
     )
   end
-
-  subject { described_class.new(bound_variables, term) }
 
   describe '#substitute' do
     let(:bound_variables) do
