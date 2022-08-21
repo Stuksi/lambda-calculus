@@ -1,5 +1,14 @@
 require_relative 'environment'
 
+task :debug do
+  named_expression = '(^ab.ab)[a->^z.z](abcde)(^c.a)[a->c]zz[z -> f]'
+
+  parsed_named_expression = Lambda::NamedExpressionParser.parse(named_expression)
+  puts named_expression
+  puts parsed_named_expression.to_nameless
+  puts parsed_named_expression.to_nameless.to_named
+end
+
 task :debug_named_expression do
   named_expression = '(^ab.ab)[a->^z.z](abcde)(^c.a)[a->c]zz[z -> f]'
 

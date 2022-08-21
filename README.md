@@ -11,6 +11,7 @@ Implementation of core Lambda Calculus concepts
 
 ## To Do:
 - Examples
+- Alpha Equivalence
 - Code Optimization / Expression Object Cleaning
 
 ## Tokens
