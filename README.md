@@ -1,5 +1,17 @@
 # Lamba Calculus
-An easy implementation of some core lambda calculus concepts
+Implementation of core Lambda Calculus concepts
+
+## Implemented:
+- Named Lambda Expression Parsing
+- Named Lambda Expression Substitutions
+- Nameless Lambda Expressions Parsing
+- Nameless Lambda Expressions Substitutions
+- Named To Nameless Expression Conversion
+
+## To Do:
+- Nameless To Named Expressions Conversion
+- Examples
+- Code Optimization / Expression Object Cleaning
 
 ## Tokens
 ### Named Lambda Expression:
@@ -25,18 +37,6 @@ NamelessExpression := (NonBracketedTerm | BracketedTerm), [SubstitutionTerm], (N
 BracketedTerm      := (, NonBracketedTerm, )
 NonBracketedTerm   := LambdaTerm | VariableTerm
 SubstitutionTerm   := [, VariableTerm, -, >, NamelessExpression, ]
-LambdaTerm         := ^, VariableTerm+
+LambdaTerm         := ^, NamelessExpression
 VariableTerm       := 0 | ... | 9
 ```
-
-## Already Implemented:
-- Named Lambda Expression Parsing
-- Named Lambda Expression Substitutions
-- Nameless Expressions Parsing
-- Nameless Expressions Substitutions
-
-## To Do:
-- Bidirectional Named To Nameless Expressions Conversion
-- Examples
-- Specs
-- Remove Unnecessary NonBracketedTerms From Terms
