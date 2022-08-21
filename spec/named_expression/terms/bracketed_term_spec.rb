@@ -1,6 +1,8 @@
 require_relative '../../spec_helper'
 
 describe Lambda::NamedExpression::Terms::BracketedTerm do
+  subject { described_class.new(terms, substitution) }
+
   let(:terms) do
     [
       Lambda::NamedExpression::Terms::VariableTerm.new('x'),
@@ -22,8 +24,6 @@ describe Lambda::NamedExpression::Terms::BracketedTerm do
       )
     )
   end
-
-  subject { described_class.new(terms, substitution) }
 
   describe '#to_s' do
     it 'serializes the term to a string' do

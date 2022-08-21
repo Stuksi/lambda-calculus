@@ -76,4 +76,11 @@ describe Lambda::NamedExpression::NamedExpression do
       expect(subject.to_s).to eq('(xy((^x.z)[z->y[y->x]]y))[y->(^wu.vwu)]')
     end
   end
+
+  describe '#==' do
+    it 'compares the variable terms' do
+      expect(subject == described_class.new(term)).to eq(true)
+      expect(subject == described_class.new(Lambda::NamedExpression::Terms::VariableTerm.new('y'))).to eq(false)
+    end
+  end
 end

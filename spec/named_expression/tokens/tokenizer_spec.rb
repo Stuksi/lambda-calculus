@@ -114,7 +114,10 @@ describe Lambda::NamedExpression::Tokens::Tokenizer do
 
       it 'raises an error' do
         (ASCII_CHARACTERS - recognized_symbols).each do |expression|
-          expect { described_class.tokenize_expression(expression) }.to raise_error(Lambda::NamedExpression::Tokens::NamedExpressionTokenizerException, "FATAL: invalid token #{expression}")
+          expect { described_class.tokenize_expression(expression) }.to raise_error(
+            Lambda::NamedExpression::Tokens::TokenizerException,
+            "FATAL: invalid token #{expression}"
+          )
         end
       end
     end

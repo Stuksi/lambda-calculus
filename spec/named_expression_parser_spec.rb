@@ -121,7 +121,10 @@ describe Lambda::NamedExpressionParser do
         let(:expression) { '[x->y]' }
 
         it 'raises an error' do
-          expect { subject }.to raise_error(Lambda::NamedExpressionParserException, 'FATAL: ivalid expression')
+          expect { subject }.to raise_error(
+            Lambda::NamedExpressionParserException,
+            'FATAL: ivalid expression'
+          )
         end
       end
 
@@ -292,7 +295,10 @@ describe Lambda::NamedExpressionParser do
       let(:expression) { 'xyz[x->y]0x' }
 
       it 'raises an error' do
-        expect { subject }.to raise_error(Lambda::NamedExpression::Tokens::NamedExpressionTokenizerException, "FATAL: invalid token 0")
+        expect { subject }.to raise_error(
+          Lambda::NamedExpression::Tokens::TokenizerException,
+          "FATAL: invalid token 0"
+        )
       end
     end
   end
