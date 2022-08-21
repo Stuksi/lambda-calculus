@@ -80,10 +80,10 @@ module Lambda
       end
 
       def raise_parse_exception
-        raise NamedExpressionParserException.new('FATAL: ivalid expression')
+        raise ParserException.new('FATAL: ivalid expression')
       end
     end
   end
 
-  class NamedExpressionParserException < Exception; end
+  class ParserException < Exception; end
 end

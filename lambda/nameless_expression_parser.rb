@@ -73,10 +73,8 @@ module Lambda
       end
 
       def raise_parse_exception
-        raise NamelessExpressionParserException.new('FATAL: ivalid expression')
+        raise ParserException.new('FATAL: ivalid expression')
       end
     end
   end
-
-  class NamelessExpressionParserException < Exception; end
 end

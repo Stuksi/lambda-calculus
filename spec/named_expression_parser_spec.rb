@@ -122,53 +122,13 @@ describe Lambda::NamedExpressionParser do
 
         it 'raises an error' do
           expect { subject }.to raise_error(
-            Lambda::NamedExpressionParserException,
+            Lambda::ParserException,
             'FATAL: ivalid expression'
           )
         end
       end
 
       context 'which are bound' do
-        let(:expression) { '^x.xy^y.yx' }
-        let(:parsed_expression) do
-          Lambda::NamedExpression::NamedExpression.new(
-            Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-              [
-                Lambda::NamedExpression::Terms::LambdaTerm.new(
-                  [Lambda::NamedExpression::Terms::VariableTerm.new('x')],
-                  Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-                    [
-                      Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-                        [Lambda::NamedExpression::Terms::VariableTerm.new('x')]
-                      ),
-                      Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-                        [Lambda::NamedExpression::Terms::VariableTerm.new('y')]
-                      ),
-                      Lambda::NamedExpression::Terms::LambdaTerm.new(
-                        [Lambda::NamedExpression::Terms::VariableTerm.new('y')],
-                        Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-                          [
-                            Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-                              [Lambda::NamedExpression::Terms::VariableTerm.new('y')]
-                            ),
-                            Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-                              [Lambda::NamedExpression::Terms::VariableTerm.new('x')]
-                            )
-                          ]
-                        )
-                      )
-                    ]
-                  )
-                )
-              ]
-            )
-          )
-        end
-
-        it_behaves_like 'parsing example'
-      end
-
-      context 'with bracketed terms' do
         let(:expression) { 'x[x->y]' }
         let(:parsed_expression) do
           Lambda::NamedExpression::NamedExpression.new(
