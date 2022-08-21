@@ -15,14 +15,14 @@ module Lambda
               when '-'      then Token.new(:dash, '-')
               when '>'      then Token.new(:arrow, '>')
               when '0'..'9' then Token.new(:variable, character)
-              else raise NamelessExpressionTokenizerException.new("FATAL: invalid token #{character}")
+              else raise TokenizerException.new("FATAL: invalid token #{character}")
               end
-            end.compact.push(Token.new(:end, '0'))
+            end.compact.push(Token.new(:end, '|'))
           end
         end
       end
 
-      class NamelessExpressionTokenizerException < Exception; end
+      class TokenizerException < Exception; end
     end
   end
 end
