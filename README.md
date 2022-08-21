@@ -7,9 +7,9 @@ Implementation of core Lambda Calculus concepts
 - Nameless Lambda Expressions Parsing
 - Nameless Lambda Expressions Substitutions
 - Named To Nameless Expression Conversion
+- Nameless To Named Expression Conversion
 
 ## To Do:
-- Nameless To Named Expressions Conversion
 - Examples
 - Code Optimization / Expression Object Cleaning
 
