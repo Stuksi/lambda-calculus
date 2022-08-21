@@ -30,6 +30,16 @@ task :debug_named_to_nameless_expression_conversion do
 
   parsed_nameless_expression = parsed_named_expression.to_nameless
   Lambda::Logger.log_nameless_expression(parsed_nameless_expression)
-  substituted_nameless_expression = parsed_nameless_expression.substitute
-  Lambda::Logger.log_nameless_expression(substituted_nameless_expression)
+rescue Exception => exception
+  Lambda::Logger.log_exception("#{exception}")
+end
+
+task :debug_nameless_to_named_expression_conversion do
+  nameless_expression = '(^^^^^^34521066)(00000)(^1)00'
+  parsed_nameless_expression = Lambda::NamelessExpressionParser.parse(nameless_expression)
+
+  parsed_named_expression = parsed_nameless_expression.to_named
+  Lambda::Logger.log_named_expression(parsed_named_expression)
+rescue Exception => exception
+  Lambda::Logger.log_exception("#{exception}")
 end
