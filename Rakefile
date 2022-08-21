@@ -38,7 +38,7 @@ task :debug_named_to_nameless_expression_conversion do
 end
 
 task :debug_nameless_to_named_expression_conversion do
-  nameless_expression = '(^^^^^^34521066)(00000)(^1)00'
+  nameless_expression = '(^^^^^^34521066)(12345)(^4)06'
   parsed_nameless_expression = Lambda::NamelessExpressionParser.parse(nameless_expression)
 
   parsed_named_expression = parsed_nameless_expression.to_named

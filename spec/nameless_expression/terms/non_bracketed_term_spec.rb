@@ -31,47 +31,19 @@ describe Lambda::NamelessExpression::Terms::NonBracketedTerm do
   end
 
   describe '#to_named' do
-    context 'without a substitution' do
-      it 'converts the term to named term' do
-        expect(subject.to_named({0=>'x', 1=>'y'}, {})).to eq(
-          Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-            [
-              Lambda::NamedExpression::Terms::VariableTerm.new('x'),
-              Lambda::NamedExpression::Terms::VariableTerm.new('y'),
-              Lambda::NamedExpression::Terms::LambdaTerm.new(
-                [Lambda::NamedExpression::Terms::VariableTerm.new('a')],
-                Lambda::NamedExpression::Terms::VariableTerm.new('a')
-              )
-            ]
-          )
+    it 'converts the term to named term' do
+      expect(subject.to_named({0=>'x', 1=>'y'}, {})).to eq(
+        Lambda::NamedExpression::Terms::NonBracketedTerm.new(
+          [
+            Lambda::NamedExpression::Terms::VariableTerm.new('x'),
+            Lambda::NamedExpression::Terms::VariableTerm.new('y'),
+            Lambda::NamedExpression::Terms::LambdaTerm.new(
+              [Lambda::NamedExpression::Terms::VariableTerm.new('a')],
+              Lambda::NamedExpression::Terms::VariableTerm.new('a')
+            )
+          ]
         )
-      end
-    end
-
-    context 'with a substitution' do
-      let(:substitution) do
-        Lambda::NamelessExpression::Terms::SubstitutionTerm.new(
-          Lambda::NamelessExpression::Terms::VariableTerm.new(0),
-          described_class.new([Lambda::NamelessExpression::Terms::VariableTerm.new(1)])
-        )
-      end
-
-      it 'first substitutes and then converts the term to named term' do
-        expect(subject.to_named({0=>'x', 1=>'y'}, {})).to eq(
-          Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-            [
-              Lambda::NamedExpression::Terms::NonBracketedTerm.new(
-                [Lambda::NamedExpression::Terms::VariableTerm.new('y')]
-              ),
-              Lambda::NamedExpression::Terms::VariableTerm.new('y'),
-              Lambda::NamedExpression::Terms::LambdaTerm.new(
-                [Lambda::NamedExpression::Terms::VariableTerm.new('a')],
-                Lambda::NamedExpression::Terms::VariableTerm.new('a')
-              )
-            ]
-          )
-        )
-      end
+      )
     end
   end
 end

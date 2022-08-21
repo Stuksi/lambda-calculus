@@ -22,8 +22,8 @@ module Lambda
           self.class.new(substituted_terms)
         end
 
-        def to_nameless(lambdas_depth, bound_variables)
-          nameless_terms = self.substitute.terms.map { |term| term.to_nameless(lambdas_depth, bound_variables) }
+        def to_nameless(context, lambdas_depth, bound_variables)
+          nameless_terms = terms.map { |term| term.to_nameless(context, lambdas_depth, bound_variables) }
 
           if self.class == NonBracketedTerm
             NamelessExpression::Terms::NonBracketedTerm.new(nameless_terms)

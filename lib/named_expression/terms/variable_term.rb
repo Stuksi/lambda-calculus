@@ -19,11 +19,11 @@ module Lambda
           end
         end
 
-        def to_nameless(lambdas_depth, bound_variables)
+        def to_nameless(context, lambdas_depth, bound_variables)
           if bound_variables.key?(symbol)
             NamelessExpression::Terms::VariableTerm.new(bound_variables[symbol])
           else
-            NamelessExpression::Terms::VariableTerm.new(lambdas_depth)
+            NamelessExpression::Terms::VariableTerm.new(context[symbol] + lambdas_depth)
           end
         end
 

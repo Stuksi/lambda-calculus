@@ -66,8 +66,8 @@ describe Lambda::NamedExpression::NamedExpression do
   end
 
   describe '#to_nameless' do
-    it 'converts the term to nameless' do
-      expect(subject.to_nameless.to_s).to eq('(0(^^210)((^1)(^^210)))')
+    it 'substitutes and then converts the term to nameless' do
+      expect(subject.to_nameless.to_s).to eq('(0(^^310)((^1)(^^310)))')
     end
   end
 

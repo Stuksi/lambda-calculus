@@ -12,7 +12,12 @@ module Lambda
       end
 
       def to_nameless
-        NamelessExpression::NamelessExpression.new(term.to_nameless(0, {}))
+        substituted_term = term.substitute
+        context = substituted_term.free_variables.map(&:symbol).zip(
+          NamelessExpression::Terms::VariableTerm::SYMBOLS
+        ).to_h
+
+        NamelessExpression::NamelessExpression.new(substituted_term.to_nameless(context, 0, {}))
       end
 
       def to_s

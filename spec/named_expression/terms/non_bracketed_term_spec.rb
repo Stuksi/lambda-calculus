@@ -120,59 +120,21 @@ describe Lambda::NamedExpression::Terms::NonBracketedTerm do
   end
 
   describe '#to_nameless' do
-    context 'without a substitution' do
-      let(:substitution) { nil }
-
-      it 'converts the term to nameless term' do
-        expect(subject.to_nameless(0, {})).to eq(
-          Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
-            [
-              Lambda::NamelessExpression::Terms::VariableTerm.new(0),
-              Lambda::NamelessExpression::Terms::VariableTerm.new(0),
-              Lambda::NamelessExpression::Terms::LambdaTerm.new(
-                Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
-                  [Lambda::NamelessExpression::Terms::VariableTerm.new(1)]
-                )
-              ),
-              Lambda::NamelessExpression::Terms::VariableTerm.new(0)
-            ]
-          )
-        )
-      end
-    end
-
-    context 'with a substitution' do
-      let(:substitution) do
-        Lambda::NamedExpression::Terms::SubstitutionTerm.new(
-          Lambda::NamedExpression::Terms::VariableTerm.new('x'),
-          described_class.new([Lambda::NamedExpression::Terms::VariableTerm.new('w')])
-        )
-      end
-
-      it 'first substitutes and then converts the term to nameless term' do
-        expect(subject.to_nameless(0, {})).to eq(
-          Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
-            [
+    it 'converts the term to nameless term' do
+      expect(subject.to_nameless({'x'=>0,'y'=>1}, 0, {})).to eq(
+        Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
+          [
+            Lambda::NamelessExpression::Terms::VariableTerm.new(0),
+            Lambda::NamelessExpression::Terms::VariableTerm.new(1),
+            Lambda::NamelessExpression::Terms::LambdaTerm.new(
               Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
-                [Lambda::NamelessExpression::Terms::VariableTerm.new(0)]
-              ),
-              Lambda::NamelessExpression::Terms::VariableTerm.new(0),
-              Lambda::NamelessExpression::Terms::LambdaTerm.new(
-                Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
-                  [
-                    Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
-                      [Lambda::NamelessExpression::Terms::VariableTerm.new(1)]
-                    )
-                  ]
-                )
-              ),
-              Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
-                [Lambda::NamelessExpression::Terms::VariableTerm.new(0)]
+                [Lambda::NamelessExpression::Terms::VariableTerm.new(1)]
               )
-            ]
-          )
+            ),
+            Lambda::NamelessExpression::Terms::VariableTerm.new(0)
+          ]
         )
-      end
+      )
     end
   end
 

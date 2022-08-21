@@ -46,23 +46,17 @@ describe Lambda::NamedExpression::Terms::VariableTerm do
 
   describe '#to_nameless' do
     context 'with bound variable' do
-      let(:lambdas) { 2 }
-      let(:bound_variables) { {'x' => 1} }
-
       it 'returns a nameless variable term bound to the lambda' do
-        expect(subject.to_nameless(lambdas, bound_variables)).to eq(
+        expect(subject.to_nameless({'x'=>0}, 2, {'x'=>1})).to eq(
           Lambda::NamelessExpression::Terms::VariableTerm.new(1)
         )
       end
     end
 
     context 'with free variable' do
-      let(:lambdas) { 2 }
-      let(:bound_variables) { {'y' => 1} }
-
-      it 'returns a nameless variable term bound to no lambda' do
-        expect(subject.to_nameless(lambdas, bound_variables)).to eq(
-          Lambda::NamelessExpression::Terms::VariableTerm.new(lambdas)
+      it 'returns a nameless variable term bound to no lambda based on context' do
+        expect(subject.to_nameless({'x'=>0}, 2, {'y'=>1})).to eq(
+          Lambda::NamelessExpression::Terms::VariableTerm.new(2)
         )
       end
     end
