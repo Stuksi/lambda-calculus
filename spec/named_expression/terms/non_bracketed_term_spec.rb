@@ -1,6 +1,8 @@
 require_relative '../../spec_helper'
 
 describe Lambda::NamedExpression::Terms::NonBracketedTerm do
+  subject { described_class.new(terms, substitution) }
+
   let(:terms) do
     [
       Lambda::NamedExpression::Terms::VariableTerm.new('x'),
@@ -18,8 +20,6 @@ describe Lambda::NamedExpression::Terms::NonBracketedTerm do
       described_class.new([Lambda::NamedExpression::Terms::VariableTerm.new('w')])
     )
   end
-
-  subject { described_class.new(terms, substitution) }
 
   describe '#substitute' do
     it 'substitutes in every inside term' do

@@ -8,6 +8,8 @@ module Lambda
             substitution
           )
         end
+
+        undef_method :to_nameless, :free_variables
       end
     end
   end
