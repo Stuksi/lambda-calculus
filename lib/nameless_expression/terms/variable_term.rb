@@ -15,9 +15,13 @@ module Lambda
 
         def to_named(context, lambda_context)
           if lambda_context.key?(symbol)
-            NamedExpression::Terms::VariableTerm.new(lambda_context[lambda_context.length - 1 - symbol])
+            NamedExpression::Terms::VariableTerm.new(
+              lambda_context[lambda_context.length - 1 - symbol]
+            )
           else
-            NamedExpression::Terms::VariableTerm.new(context[symbol - lambda_context.length])
+            NamedExpression::Terms::VariableTerm.new(
+              context[symbol - lambda_context.length]
+            )
           end
         end
 

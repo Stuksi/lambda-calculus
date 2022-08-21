@@ -68,6 +68,31 @@ describe Lambda::NamelessExpression::Terms::LambdaTerm do
     end
   end
 
+  describe '#to_named' do
+    let(:term) do
+      Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
+        [
+          Lambda::NamelessExpression::Terms::VariableTerm.new(0),
+          Lambda::NamelessExpression::Terms::VariableTerm.new(2)
+        ]
+      )
+    end
+
+    it 'returns the named lambda term with the next available bound variable symbol' do
+      expect(subject.to_named({0 => 'x'}, {0 => 'a'})).to eq(
+        Lambda::NamedExpression::Terms::LambdaTerm.new(
+          [Lambda::NamedExpression::Terms::VariableTerm.new('b')],
+          Lambda::NamedExpression::Terms::NonBracketedTerm.new(
+            [
+              Lambda::NamedExpression::Terms::VariableTerm.new('b'),
+              Lambda::NamedExpression::Terms::VariableTerm.new('x')
+            ]
+          )
+        )
+      )
+    end
+  end
+
   describe '#to_s' do
     it 'serializes the term to a string' do
       expect(subject.to_s).to eq('^01')

@@ -40,4 +40,26 @@ describe Lambda::NamelessExpression::Terms::VariableTerm do
       end
     end
   end
+
+  describe '#to_named' do
+    context 'with bound variable' do
+      let(:symbol) { 0 }
+
+      it 'returns the variable bound to the lambda' do
+        expect(subject.to_named({}, {0 => 'x'})).to eq(
+          Lambda::NamedExpression::Terms::VariableTerm.new('x')
+        )
+      end
+    end
+
+    context 'with unbound variable' do
+      let(:symbol) { 0 }
+
+      it 'returns the variable from the context' do
+        expect(subject.to_named({0 => 'x'}, {})).to eq(
+          Lambda::NamedExpression::Terms::VariableTerm.new('x')
+        )
+      end
+    end
+  end
 end

@@ -30,7 +30,7 @@ module Lambda
           bound_variable = NamedExpression::Terms::VariableTerm::SYMBOLS[lambda_context.length]
 
           NamedExpression::Terms::LambdaTerm.new(
-            [bound_variable],
+            [NamedExpression::Terms::VariableTerm.new(bound_variable)],
             term.to_named(
               context,
               lambda_context.merge({
