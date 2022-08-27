@@ -19,8 +19,12 @@ module Lambda
         NamelessExpression::NamelessExpression.new(term.to_nameless(context, {}))
       end
 
-      def alpha_equivalent_to(named_expression)
+      def alpha_eql?(named_expression)
         self.to_nameless.to_s == named_expression.to_nameless.to_s
+      end
+
+      def subterm?(named_expression)
+        self.to_s.include?(named_expression.to_s)
       end
 
       def to_s

@@ -71,7 +71,7 @@ describe Lambda::NamedExpression::NamedExpression do
     end
   end
 
-  describe '#alpha_equivalent_to' do
+  describe '#alpha_eql?' do
     let(:alpha_equivalent_term) do
       Lambda::NamedExpression::Terms::BracketedTerm.new(
         [
@@ -137,9 +137,28 @@ describe Lambda::NamedExpression::NamedExpression do
     end
 
     it 'compares named expression by alpha equivalence' do
-      expect(subject.alpha_equivalent_to(subject)).to eq(true)
-      expect(subject.alpha_equivalent_to(described_class.new(alpha_equivalent_term))).to eq(true)
-      expect(subject.alpha_equivalent_to(described_class.new(not_alpha_equivalent_term))).to eq(false)
+      expect(subject.alpha_eql?(subject)).to eq(true)
+      expect(subject.alpha_eql?(described_class.new(alpha_equivalent_term))).to eq(true)
+      expect(subject.alpha_eql?(described_class.new(not_alpha_equivalent_term))).to eq(false)
+    end
+  end
+
+  describe '#subterm?' do
+    let(:subterm) do
+      Lambda::NamedExpression::Terms::NonBracketedTerm.new(
+        [
+          Lambda::NamedExpression::Terms::VariableTerm.new('x'),
+          Lambda::NamedExpression::Terms::VariableTerm.new('y')
+        ]
+      )
+    end
+    let(:not_subterm) do
+      Lambda::NamedExpression::Terms::VariableTerm.new('a')
+    end
+
+    it 'check if the passed as a parameter term is a subterm' do
+      expect(subject.subterm?(subterm)).to eq(true)
+      expect(subject.subterm?(not_subterm)).to eq(false)
     end
   end
 
