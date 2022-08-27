@@ -20,6 +20,10 @@ module Lambda
         NamelessExpression::NamelessExpression.new(substituted_term.to_nameless(context, 0, {}))
       end
 
+      def alpha_equivalent_to(named_expression)
+        self.to_nameless.to_s == named_expression.to_nameless.to_s
+      end
+
       def to_s
         term.to_s
       end
