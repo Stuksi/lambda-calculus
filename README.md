@@ -8,10 +8,11 @@ Implementation of core Lambda Calculus concepts
 - Nameless Lambda Expressions Substitutions
 - Named To Nameless Expression Conversion
 - Nameless To Named Expression Conversion
+- Named Lambda Expressions Alpha Equivalence
+- Expressions Subterms
 
 ## To Do:
 - Examples
-- Alpha Equivalence
 - Code Optimization / Expression Object Cleaning
 
 ## Tokens

@@ -4,9 +4,15 @@ task :debug do
   named_expression = '(^ab.ab)[a->^z.z](abcde)(^c.a)[a->c]zz[z -> f]'
 
   parsed_named_expression = Lambda::NamedExpressionParser.parse(named_expression)
+  parsed_named_subterm_expression = Lambda::NamedExpressionParser.parse('(abcde)(^c.a)')
   puts named_expression
+  puts parsed_named_expression.substitute
   puts parsed_named_expression.to_nameless
+  puts parsed_named_expression.to_nameless.substitute
   puts parsed_named_expression.to_nameless.to_named
+  puts parsed_named_expression.to_nameless.to_named.to_nameless
+  puts parsed_named_expression.alpha_eql?(parsed_named_expression.to_nameless.to_named)
+  puts parsed_named_expression.subterm?(parsed_named_subterm_expression)
 end
 
 task :debug_named_expression do
