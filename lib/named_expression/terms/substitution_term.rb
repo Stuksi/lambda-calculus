@@ -11,8 +11,8 @@ module Lambda
 
         def to_nameless(context)
           NamelessExpression::Terms::SubstitutionTerm.new(
-            variable.to_nameless(context, 0, {}),
-            term.to_nameless(context, 0, {})
+            variable.to_nameless(context, {}),
+            term.to_nameless(context, {})
           )
         end
 

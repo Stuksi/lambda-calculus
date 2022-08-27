@@ -147,7 +147,7 @@ describe Lambda::NamedExpression::Terms::LambdaTerm do
       end
 
       it 'converts them to a nameless term with variable index outside the lambdas' do
-        expect(subject.to_nameless({'w'=>0}, 0, {})).to eq(
+        expect(subject.to_nameless({'w'=>0}, {})).to eq(
           Lambda::NamelessExpression::Terms::LambdaTerm.new(
             Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
               [
@@ -181,7 +181,7 @@ describe Lambda::NamedExpression::Terms::LambdaTerm do
       end
 
       it 'converts them to a nameless term with variable index outside the lambdas' do
-        expect(subject.to_nameless({}, 0, {})).to eq(
+        expect(subject.to_nameless({}, {})).to eq(
           Lambda::NamelessExpression::Terms::LambdaTerm.new(
             Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
               [

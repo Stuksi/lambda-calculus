@@ -121,7 +121,7 @@ describe Lambda::NamedExpression::Terms::NonBracketedTerm do
 
   describe '#to_nameless' do
     it 'converts the term to nameless term' do
-      expect(subject.to_nameless({'x'=>0,'y'=>1,'w'=>2}, 0, {})).to eq(
+      expect(subject.to_nameless({'x'=>0,'y'=>1,'w'=>2}, {})).to eq(
         Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
           [
             Lambda::NamelessExpression::Terms::VariableTerm.new(0),

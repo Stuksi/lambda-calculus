@@ -16,7 +16,7 @@ module Lambda
           NamelessExpression::Terms::VariableTerm::SYMBOLS
         ).to_h
 
-        NamelessExpression::NamelessExpression.new(term.to_nameless(context, 0, {}))
+        NamelessExpression::NamelessExpression.new(term.to_nameless(context, {}))
       end
 
       def alpha_equivalent_to(named_expression)
