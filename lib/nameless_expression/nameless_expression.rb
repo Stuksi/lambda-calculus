@@ -9,7 +9,7 @@ module Lambda
         NamedExpression::NamedExpression.new(term.to_named(context, {}))
       end
 
-      undef_method :to_nameless
+      undef_method :to_nameless, :alpha_eql?
     end
   end
 end
