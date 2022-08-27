@@ -11,11 +11,12 @@ module Lambda
 
         def to_named(context, lambda_context)
           named_terms = terms.map { |term| term.to_named(context, lambda_context) }
+          named_substitution = substitution.to_named(context) if substitution
 
           if self.class == NonBracketedTerm
-            NamedExpression::Terms::NonBracketedTerm.new(named_terms)
+            NamedExpression::Terms::NonBracketedTerm.new(named_terms, named_substitution)
           else
-            NamedExpression::Terms::BracketedTerm.new(named_terms)
+            NamedExpression::Terms::BracketedTerm.new(named_terms, named_substitution)
           end
         end
 

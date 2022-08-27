@@ -23,6 +23,11 @@ module Lambda
           if bound_variables.key?(symbol)
             NamelessExpression::Terms::VariableTerm.new(bound_variables[symbol])
           else
+            if context[symbol].nil?
+              puts context
+              puts symbol
+              puts
+            end
             NamelessExpression::Terms::VariableTerm.new(context[symbol] + lambdas_depth)
           end
         end

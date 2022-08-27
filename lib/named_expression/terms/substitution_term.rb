@@ -9,6 +9,13 @@ module Lambda
           @term = term
         end
 
+        def to_nameless(context)
+          NamelessExpression::Terms::SubstitutionTerm.new(
+            variable.to_nameless(context, 0, {}),
+            term.to_nameless(context, 0, {})
+          )
+        end
+
         def to_s
           "[#{variable}->#{term}]"
         end

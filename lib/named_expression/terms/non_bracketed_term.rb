@@ -24,18 +24,23 @@ module Lambda
 
         def to_nameless(context, lambdas_depth, bound_variables)
           nameless_terms = terms.map { |term| term.to_nameless(context, lambdas_depth, bound_variables) }
+          nameless_substitution = substitution.to_nameless(context) if substitution
 
           if self.class == NonBracketedTerm
-            NamelessExpression::Terms::NonBracketedTerm.new(nameless_terms)
+            NamelessExpression::Terms::NonBracketedTerm.new(nameless_terms, nameless_substitution)
           else
-            NamelessExpression::Terms::BracketedTerm.new(nameless_terms)
+            NamelessExpression::Terms::BracketedTerm.new(nameless_terms, nameless_substitution)
           end
         end
 
         def free_variables(bound_variables = [])
-          terms.map { |term| term.free_variables(bound_variables) }
-               .flatten
-               .uniq { |variable| variable.symbol }
+          terms
+            .map { |term| term.free_variables(bound_variables) }
+            .push(substitution&.variable&.free_variables)
+            .push(substitution&.term&.free_variables)
+            .compact
+            .flatten
+            .uniq { |variable| variable.symbol }
         end
 
         def to_s

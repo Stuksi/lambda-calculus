@@ -62,7 +62,7 @@ describe Lambda::NamelessExpression::NamelessExpression do
 
   describe '#to_named' do
     it 'substitutes and converts the term to named term' do
-      expect(subject.to_named.to_s).to eq('((^a.^b.zab)(^a.^b.zab)((^a.x)(^a.^b.zab)))')
+      expect(subject.to_named.to_s).to eq('(zz((^a.z)[z->y[y->x]]z))[z->(^a.^b.zab)]')
     end
   end
 end

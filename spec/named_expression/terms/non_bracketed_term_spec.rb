@@ -121,7 +121,7 @@ describe Lambda::NamedExpression::Terms::NonBracketedTerm do
 
   describe '#to_nameless' do
     it 'converts the term to nameless term' do
-      expect(subject.to_nameless({'x'=>0,'y'=>1}, 0, {})).to eq(
+      expect(subject.to_nameless({'x'=>0,'y'=>1,'w'=>2}, 0, {})).to eq(
         Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
           [
             Lambda::NamelessExpression::Terms::VariableTerm.new(0),
@@ -132,7 +132,13 @@ describe Lambda::NamedExpression::Terms::NonBracketedTerm do
               )
             ),
             Lambda::NamelessExpression::Terms::VariableTerm.new(0)
-          ]
+          ],
+          Lambda::NamelessExpression::Terms::SubstitutionTerm.new(
+            Lambda::NamelessExpression::Terms::VariableTerm.new(0),
+            Lambda::NamelessExpression::Terms::NonBracketedTerm.new(
+              [Lambda::NamelessExpression::Terms::VariableTerm.new(2)]
+            )
+          )
         )
       )
     end
@@ -144,7 +150,8 @@ describe Lambda::NamedExpression::Terms::NonBracketedTerm do
         expect(subject.free_variables).to eq(
           [
             Lambda::NamedExpression::Terms::VariableTerm.new('x'),
-            Lambda::NamedExpression::Terms::VariableTerm.new('y')
+            Lambda::NamedExpression::Terms::VariableTerm.new('y'),
+            Lambda::NamedExpression::Terms::VariableTerm.new('w')
           ]
         )
       end
@@ -157,7 +164,11 @@ describe Lambda::NamedExpression::Terms::NonBracketedTerm do
 
       it 'returns the free variables of all of the terms' do
         expect(subject.free_variables(bound_variables)).to eq(
-          [Lambda::NamedExpression::Terms::VariableTerm.new('y')]
+          [
+            Lambda::NamedExpression::Terms::VariableTerm.new('y'),
+            Lambda::NamedExpression::Terms::VariableTerm.new('x'),
+            Lambda::NamedExpression::Terms::VariableTerm.new('w')
+          ]
         )
       end
     end
