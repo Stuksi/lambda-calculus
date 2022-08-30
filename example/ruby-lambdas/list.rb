@@ -28,6 +28,10 @@ cmap = lambda{|l| lambda{|f| l.(lambda{|x| lambda{|y| cl.(f.(x)).(y)}}).(cnil)}}
 cfoldr = lambda{|l| lambda{|f| lambda{|s| l.(lambda{|x| lambda{|y| f.(x).(y)}}).(s)}}}
 cfilter = lambda{|l| lambda{|f| l.(lambda{|x| lambda{|y| f.(x).(cl.(x).(y)).(y)}}).(cnil)}}
 
+# Eta Reduced New Functions
+eTAmem = lambda{|l| lambda{|n| l.(lambda{|x| cor.(ceql.(x).(n))}).(cff)}}
+eTAcfold = lambda{|l| lambda{|f| lambda{|s| l.(f).(s)}}}
+
 # Debugging
 pcn = lambda{|cn| puts cn.(lambda{|x| x+1}).(0)}
 pcl = lambda{|cl| cl.(lambda{|x| lambda{|y| pcn.(x)}}).(cnil)}
@@ -41,8 +45,12 @@ pcl.(capp.(cl012).(cn.(3))) # 0 1 2 3
 pcn.(clen.(capp.(cl012).(cn.(3)))) # 4
 pb.(cmem.(cl012).(cn.(0))) # true
 pb.(cmem.(cl012).(cn.(3))) # false
+pb.(eTAmem.(cl012).(cn.(0))) # true
+pb.(eTAmem.(cl012).(cn.(3))) # false
 pcl.(cmap.(cl012).(cplus)) # 1 2 3
 pcn.(cfoldr.(cl012).(cadd).(cn.(0))) # 3
 pcn.(cfoldr.(capp.(cl012).(cn.(125))).(cadd).(cn.(4))) # 132
+pcn.(eTAcfold.(cl012).(cadd).(cn.(0))) # 3
+pcn.(eTAcfold.(capp.(cl012).(cn.(125))).(cadd).(cn.(4))) # 132
 pcl.(cfilter.(cl012).(cpositive)) # 1 2
 pcl.(cfilter.(cl012).(ceql.(cn.(0)))) # 0
